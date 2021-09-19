@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import edu.westga.cs3152.knownpasswords.KnownPasswordManager;
+import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
 
 class TestConstructor {
 
