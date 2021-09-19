@@ -5,7 +5,7 @@ import static org.junit.Assert.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import edu.westga.cs3152.knownpasswords.KnownPasswordManager;
+import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
 
 class TestRemovePassword {
 

@@ -1,4 +1,4 @@
-package edu.westga.cs3152.knownpasswords;
+package edu.westga.cs3152.passwordmanagers;
 
 import java.util.HashMap;
 
