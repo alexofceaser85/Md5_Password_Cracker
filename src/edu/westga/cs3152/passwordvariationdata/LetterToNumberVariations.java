@@ -38,6 +38,30 @@ public class LetterToNumberVariations {
 	public int getNumberOfVariations() {
 		return this.letterToNumberVariations.size();
 	}
+	
+	/**
+	 * Gets the number of letters that have variations in a word
+	 * 
+	 * @precondition wordToCheck != null
+	 * @postcondition none
+	 * 
+	 * @return the number of letters that have variations in a word
+	 */
+	
+	public int getNumberOfVariationsInWord(String wordToCheck) {
+		//TODO Add precondition
+		
+		int numberOfVariations = 0;
+		String[] wordCollection = wordToCheck.split("");
+		
+		for (String letter : wordCollection) {
+			if (this.letterToNumberVariations.containsKey(letter)) {
+				numberOfVariations++;
+			}
+		}
+		
+		return numberOfVariations;
+	}
 
 	/**
 	 * Determines if a given word has a number variant
@@ -71,7 +95,7 @@ public class LetterToNumberVariations {
 	 * @postcondition none
 	 * 
 	 * @param letterToGet the letter to use to get its number variant
-	 * @return the number variant of the letter
+	 * @return the number variant of the letter, null if letter has no variant
 	 */
 	public String getLettersNumberVariant(String letterToGet) {
 		if (letterToGet == null) {
@@ -82,7 +106,7 @@ public class LetterToNumberVariations {
 			return this.letterToNumberVariations.get(letterToGet);
 		}
 		
-		return letterToGet;
+		return null;
 	}
 	
 	private void populateLetterToNumberVariations() {

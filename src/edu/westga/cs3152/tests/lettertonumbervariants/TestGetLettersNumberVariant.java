@@ -20,7 +20,7 @@ class TestGetLettersNumberVariant {
 	@Test
 	void shouldReturnLetterIfLetterHasNoNumberVariant() {
 		LetterToNumberVariations variations = new LetterToNumberVariations();
-		assertEquals("z", variations.getLettersNumberVariant("z"));
+		assertEquals(null, variations.getLettersNumberVariant("z"));
 	}
 
 	@Test
