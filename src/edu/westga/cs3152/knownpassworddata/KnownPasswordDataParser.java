@@ -33,7 +33,7 @@ public final class KnownPasswordDataParser {
 			knownPasswordWriter.close();
 			return;
 		}
-		
+
 		SimpleCrypt crypt = new SimpleCrypt();
 		
 		while (passwordScanner.hasNextLine()) {

@@ -93,15 +93,22 @@ public class PasswordPermutations {
 		ArrayList<Integer> indexesOfPossibleNumbers = new ArrayList<Integer>();
 			
 		int switchArrayCounter = 0;
+		System.out.println(permutationsToCalculate);
 		for (int characterIndex = 0; characterIndex < permutationsToCalculate.length(); characterIndex++) {
 			if (letterToNumber.getLettersNumberVariant(passwordCharacters[characterIndex]) != null) {
 				possibleNumbers.add(passwordCharacters[characterIndex]);
 				indexesOfPossibleNumbers.add(characterIndex);
 					
-				indexesToSwitchNumbers[switchArrayCounter] = (int) Math.pow(2, (numberOfNumberVariations - characterIndex));
+				indexesToSwitchNumbers[switchArrayCounter] = (int) Math.pow(2, (numberOfNumberVariations - switchArrayCounter - 1));
+				
+				System.out.println("---  " + passwordCharacters[characterIndex]);
+				System.out.println(indexesToSwitchNumbers[switchArrayCounter]);
+				
+				System.out.println(numberOfNumberVariations);
+				System.out.println(characterIndex);
 				indexSwitchCounters[switchArrayCounter] = 0;
 				isNumber[switchArrayCounter] = true;
-					
+
 				switchArrayCounter++;
 			}
 		}
@@ -112,6 +119,10 @@ public class PasswordPermutations {
 			for (int characterIndex = 0; characterIndex < possibleNumbers.size(); characterIndex++) {
 				int maximumIndexToToggleNumber = indexesToSwitchNumbers[characterIndex];
 				
+//				System.out.println("--------------");
+//				System.out.println(possibleNumbers.get(characterIndex));
+//				System.out.println(indexSwitchCounters[characterIndex]);
+//				System.out.println(maximumIndexToToggleNumber);
 				if (indexSwitchCounters[characterIndex] == maximumIndexToToggleNumber) {
 					if (isNumber[characterIndex]) {
 						isNumber[characterIndex] = false;
@@ -121,11 +132,13 @@ public class PasswordPermutations {
 						
 					indexSwitchCounters[characterIndex] = 0;
 				}
-					
+				
 				if (isNumber[characterIndex]) {
 					permutation[indexesOfPossibleNumbers.get(characterIndex)] = letterToNumber.getLettersNumberVariant(possibleNumbers.get(characterIndex));
 				} 
 					
+//				System.out.println(String.join("", permutation));
+//				System.out.println("-----");
 				indexSwitchCounters[characterIndex]++;
 			}
 

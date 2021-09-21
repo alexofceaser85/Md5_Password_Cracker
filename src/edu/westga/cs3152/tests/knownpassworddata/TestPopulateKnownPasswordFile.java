@@ -15,22 +15,22 @@ import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
 class TestPopulateKnownPasswordFile {
 
 //TODO remove test before submission
-//	@Test
-//	void shouldPopulateFromWorstPasswords() throws IOException {
-//		KnownPasswordDataParser.populateKnownPasswordFile("./500-worst-passwords.txt");
-//		assertNotEquals("", this.toString("./500-worst-passwords.txt"));
-//	}
-//
-//	public String toString(String fileName) throws FileNotFoundException {
-//		File knownPasswords = new File(fileName);
-//		Scanner knownPasswordScanner = new Scanner(knownPasswords);
-//		String allKnownPasswords = "";
-//		
-//		while (knownPasswordScanner.hasNextLine()) {
-//			allKnownPasswords += knownPasswordScanner.nextLine() + "\n";
-//		}
-//		
-//		knownPasswordScanner.close();
-//		return allKnownPasswords;
-//	}
+	@Test
+	void shouldPopulateFromWorstPasswords() throws IOException {
+		KnownPasswordDataParser.populateKnownPasswordFile("./500-worst-passwords.txt");
+		assertNotEquals("", this.toString("./500-worst-passwords.txt"));
+	}
+
+	public String toString(String fileName) throws FileNotFoundException {
+		File knownPasswords = new File(fileName);
+		Scanner knownPasswordScanner = new Scanner(knownPasswords);
+		String allKnownPasswords = "";
+		
+		while (knownPasswordScanner.hasNextLine()) {
+			allKnownPasswords += knownPasswordScanner.nextLine() + "\n";
+		}
+		
+		knownPasswordScanner.close();
+		return allKnownPasswords;
+	}
 }

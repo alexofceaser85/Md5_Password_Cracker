@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
 import edu.westga.cs3152.permutations.PasswordPermutations;
 
-class TestPopulateWithPermutations {
-
+class TestPopulateWithPermutations {	
+	
 	@Test
 	void shouldPopulateOneCharacter() {
 		PasswordPermutations permutations = new PasswordPermutations(new KnownPasswordManager(), "i");
@@ -176,6 +176,17 @@ class TestPopulateWithPermutations {
 				+ "Qt" + System.lineSeparator()
 				+ "qT" + System.lineSeparator()
 				+ "qt" + System.lineSeparator(), this.toString(permutations.getPermutations(), "qest"));
+	}
+	
+	@Test
+	void test() {
+		PasswordPermutations permutations = new PasswordPermutations(new KnownPasswordManager(), "college");
+		permutations.populateWithPermutations();
+		assertEquals("Permutations of qest" + System.lineSeparator()
+				+ "QT" + System.lineSeparator()
+				+ "Qt" + System.lineSeparator()
+				+ "qT" + System.lineSeparator()
+				+ "qt" + System.lineSeparator(), this.toString(permutations.getPermutations(), "college"));
 	}
 	
 	public String toString(ArrayList<String> permutations, String password) {

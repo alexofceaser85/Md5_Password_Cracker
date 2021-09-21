@@ -156,7 +156,14 @@ public class KnownPasswordManager {
 	public void populateKnownPasswords(String fileNameOfKnownPasswords) throws FileNotFoundException {
 		//TODO add preconditions
 		
-
+		File knownPasswordFile = new File(fileNameOfKnownPasswords);
+		Scanner knownPasswordScanner = new Scanner(knownPasswordFile);
+		
+		while (knownPasswordScanner.hasNextLine()) {
+			String[] passwords = knownPasswordScanner.nextLine().split(",");
+			this.addPassword(passwords[1], passwords[0]);
+		}
+		
+		knownPasswordScanner.close();
 	}
-	
 }
