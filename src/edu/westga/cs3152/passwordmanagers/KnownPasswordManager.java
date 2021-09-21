@@ -1,8 +1,14 @@
 package edu.westga.cs3152.passwordmanagers;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.util.Scanner;
+import java.util.Set;
 
 import edu.westga.cs3152.errormessages.KnownPasswordManagerErrorMessages;
+import edu.westga.cs3152.hashing.SimpleCrypt;
+import edu.westga.cs3152.permutations.PasswordPermutations;
 
 /**
  * Holds the known passwords
@@ -40,6 +46,10 @@ public class KnownPasswordManager {
 		}
 		
 		return this.knownPasswords.get(encryptedPassword);
+	}
+	
+	public Set<String> getEncryptedPasswords() {
+		return this.knownPasswords.keySet();
 	}
 
 	/**
@@ -132,6 +142,21 @@ public class KnownPasswordManager {
 			throw new IllegalArgumentException(KnownPasswordManagerErrorMessages.CANNOT_REMOVE_NULL_PASSWORD);
 		}
 		return this.knownPasswords.remove(unencryptedPassword);
+	}
+	
+	/**
+	 * Populates the known password data from the given password dictionary
+	 * 
+	 * @precondition fileNameOfKnownPasswords != null && fileNameOfKnownPasswords.isEmpty() == false
+	 * @postcondition this.knownPasswords.size
+	 * 
+	 * @param fileNameOfKnownPasswords
+	 * @throws FileNotFoundException if the file does not exist
+	 */
+	public void populateKnownPasswords(String fileNameOfKnownPasswords) throws FileNotFoundException {
+		//TODO add preconditions
+		
+
 	}
 	
 }
