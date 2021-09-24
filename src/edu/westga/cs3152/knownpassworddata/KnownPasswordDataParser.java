@@ -3,11 +3,13 @@ package edu.westga.cs3152.knownpassworddata;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import edu.westga.cs3152.hashing.SimpleCrypt;
 import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
 import edu.westga.cs3152.permutations.PasswordPermutations;
+import edu.westga.cs3152.permutations.StarterPasswordPermutations;
 
 /**
  * Converts a given file of all unencrypted passwords to the known passwords file
@@ -35,7 +37,7 @@ public final class KnownPasswordDataParser {
 		}
 
 		SimpleCrypt crypt = new SimpleCrypt();
-		
+		ArrayList<String> starterPasswords = StarterPasswordPermutations.starterPasswordPermutations(new int[] {0});
 		while (passwordScanner.hasNextLine()) {
 			String knownPassword = passwordScanner.nextLine();
 			knownPasswordWriter.append(knownPassword + "," + crypt.generateHash(knownPassword) + "\n");
@@ -46,6 +48,10 @@ public final class KnownPasswordDataParser {
 			for (String permutation : permutations.getPermutations()) {
 				knownPasswordWriter.append(permutation + "," + crypt.generateHash(permutation) + "\n");
 			}
+		}
+		
+		for (String starterPassword : starterPasswords) {
+			knownPasswordWriter.append(starterPassword + "," + crypt.generateHash(starterPassword) + "\n");
 		}
 		
 		knownPasswordScanner.close();

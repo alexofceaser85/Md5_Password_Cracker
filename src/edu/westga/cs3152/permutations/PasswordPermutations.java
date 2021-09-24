@@ -6,6 +6,8 @@ import java.util.HashSet;
 
 import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
 import edu.westga.cs3152.passwordvariationdata.LetterToNumberVariations;
+import edu.westga.cs3152.permutations.characterdata.Letters;
+import edu.westga.cs3152.permutations.characterdata.Numbers;
 
 /**
  * Holds the permutations for each password
@@ -57,29 +59,16 @@ public class PasswordPermutations {
 	 * @postcondition this.permutations[0 through password.length] != null
 	 */
 	public void populateWithPermutations() {
-		this.permutations.addAll(this.calculateCasePermutations(this.password.toUpperCase(), new ArrayList<String>()));
-		ArrayList<String> letterToNumberPermutations = new ArrayList<String>();
-		for (String casePermutation : this.permutations) {
-			ArrayList<String> numberPermutations = this.letterToNumberPermutations(casePermutation, new ArrayList<String>());
-			
-			if (numberPermutations != null) {
-				letterToNumberPermutations.addAll(numberPermutations);
-			}
-		}
 
-		for (String numberPermutation : letterToNumberPermutations) {
-			if (!this.permutations.contains(numberPermutation)) {
-				this.permutations.add(numberPermutation);
-			}
+		ArrayList<String> iterablePermutations = new ArrayList<String>(this.calculateCasePermutations(this.password.toUpperCase()));
+		for (String casePermutation : iterablePermutations) {
+			this.letterToNumberPermutations(casePermutation);
 		}
-	}
+ 	}
 	
-	public ArrayList<String> letterToNumberPermutations(String permutationsToCalculate, ArrayList<String> permutations) {
+	
+	public ArrayList<String> letterToNumberPermutations(String permutationsToCalculate) {
 		LetterToNumberVariations letterToNumber = new LetterToNumberVariations();
-		
-		if (!letterToNumber.ifWordHasNumberVariant(permutationsToCalculate)) {
-			return null;
-		} 
 
 		String[] passwordCharacters = permutationsToCalculate.split("");
 		int numberOfNumberVariations = letterToNumber.getNumberOfVariationsInWord(permutationsToCalculate);
@@ -130,13 +119,13 @@ public class PasswordPermutations {
 				indexSwitchCounters[characterIndex]++;
 			}
 
-			permutations.add(String.join("", permutation));
+			this.permutations.add(String.join("", permutation));
 		}
-		return permutations;
+		return this.permutations;
 	}
 
 	
-	public ArrayList<String> calculateCasePermutations(String permutationsToCalculate, ArrayList<String> permutations) {
+	public ArrayList<String> calculateCasePermutations(String permutationsToCalculate) {
 		int[] indexesToSwitchCase = new int[permutationsToCalculate.length()];
 		boolean[] isUppercase = new boolean[permutationsToCalculate.length()];
 		int[] caseSwitchCounters = new int[permutationsToCalculate.length()];
@@ -172,9 +161,9 @@ public class PasswordPermutations {
 				caseSwitchCounters[permutationCounter]++;
 			}
 			
-			permutations.add(String.join("", permutation));
+			this.permutations.add(String.join("", permutation));
 		}
 
-		return permutations;
+		return this.permutations;
 	}
 }
