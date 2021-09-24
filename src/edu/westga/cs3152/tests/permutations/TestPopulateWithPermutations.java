@@ -201,5 +201,4 @@ class TestPopulateWithPermutations {
 		
 		return permutationsString;
 	}
-
 }
