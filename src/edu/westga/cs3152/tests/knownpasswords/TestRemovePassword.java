@@ -3,6 +3,8 @@ package edu.westga.cs3152.tests.knownpasswords;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 
 import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
@@ -10,7 +12,7 @@ import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
 class TestRemovePassword {
 
 	@Test
-	void shouldNotRemovePasswordFromEmptyManager() {
+	void shouldNotRemovePasswordFromEmptyManager() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		assertThrows(IllegalArgumentException.class, () -> {
 			manager.removePassword(null);
@@ -18,7 +20,7 @@ class TestRemovePassword {
 	}
 	
 	@Test
-	void shouldNotRemovePasswordFromManagerWithOneNotMatchingPassword() {
+	void shouldNotRemovePasswordFromManagerWithOneNotMatchingPassword() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		manager.addPassword("hello world", "password");
 		
@@ -27,7 +29,7 @@ class TestRemovePassword {
 	}
 	
 	@Test
-	void shouldRemovePasswordFromManagerWithOneMatchingPassword() {
+	void shouldRemovePasswordFromManagerWithOneMatchingPassword() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		manager.addPassword("hello world", "password");
 		
@@ -36,7 +38,7 @@ class TestRemovePassword {
 	}
 	
 	@Test
-	void shouldNotRemovePasswordFromManagerWithManyNotMatchingPasswords() {
+	void shouldNotRemovePasswordFromManagerWithManyNotMatchingPasswords() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		manager.addPassword("first", "password");
 		manager.addPassword("second", "qwerty");
@@ -47,7 +49,7 @@ class TestRemovePassword {
 	}
 	
 	@Test
-	void shouldRemoveFirstPasswordFromManagerWithManyMatchingPasswords() {
+	void shouldRemoveFirstPasswordFromManagerWithManyMatchingPasswords() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		manager.addPassword("first", "password");
 		manager.addPassword("second", "qwerty");
@@ -58,7 +60,7 @@ class TestRemovePassword {
 	}
 	
 	@Test
-	void shouldRemoveMiddlePasswordFromManagerWithManyMatchingPasswords() {
+	void shouldRemoveMiddlePasswordFromManagerWithManyMatchingPasswords() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		manager.addPassword("first", "password");
 		manager.addPassword("second", "qwerty");
@@ -69,7 +71,7 @@ class TestRemovePassword {
 	}
 	
 	@Test
-	void shouldRemoveLastPasswordFromManagerWithManyMatchingPasswords() {
+	void shouldRemoveLastPasswordFromManagerWithManyMatchingPasswords() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		manager.addPassword("first", "password");
 		manager.addPassword("second", "qwerty");

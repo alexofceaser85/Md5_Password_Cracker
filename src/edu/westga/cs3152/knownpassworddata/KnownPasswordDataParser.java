@@ -21,42 +21,33 @@ public final class KnownPasswordDataParser {
 
 	private static final String KNOWN_PASSWORD_FILE = "./knownPasswords.csv";
 	
-	public static void populateKnownPasswordFile(String fileNameToPopulate) throws IOException {
+	public static void populateKnownPasswordFile(String fileNameToPopulate, KnownPasswordManager manager, FileWriter knownFileWriter) throws IOException {
 		File passwordFile = new File(fileNameToPopulate);
-		File knownPasswordFile = new File(KNOWN_PASSWORD_FILE);
 		Scanner passwordScanner = new Scanner(passwordFile);
-		
-		Scanner knownPasswordScanner = new Scanner(knownPasswordFile);
-		FileWriter knownPasswordWriter = new FileWriter(knownPasswordFile);
-		
-		if (knownPasswordScanner.hasNextLine()) {
-			passwordScanner.close();
-			knownPasswordScanner.close();
-			knownPasswordWriter.close();
-			return;
+
+		while (passwordScanner.hasNextLine()) {
+			PasswordPermutations permutations = new PasswordPermutations(manager, passwordScanner.nextLine(), knownFileWriter);
+			permutations.populateWithPermutations();
 		}
 
-		SimpleCrypt crypt = new SimpleCrypt();
-		ArrayList<String> starterPasswords = StarterPasswordPermutations.starterPasswordPermutations(new int[] {0});
-		while (passwordScanner.hasNextLine()) {
-			String knownPassword = passwordScanner.nextLine();
-			knownPasswordWriter.append(knownPassword + "," + crypt.generateHash(knownPassword) + "\n");
-			
-			PasswordPermutations permutations = new PasswordPermutations(new KnownPasswordManager(), knownPassword);
-			permutations.populateWithPermutations();
-			
-			for (String permutation : permutations.getPermutations()) {
-				knownPasswordWriter.append(permutation + "," + crypt.generateHash(permutation) + "\n");
-			}
-		}
-		
-		for (String starterPassword : starterPasswords) {
-			knownPasswordWriter.append(starterPassword + "," + crypt.generateHash(starterPassword) + "\n");
-		}
-		
-		knownPasswordScanner.close();
-		knownPasswordWriter.close();
+		StarterPasswordPermutations.starterPasswordPermutations(new int[] {0}, manager, knownFileWriter);
 		passwordScanner.close();
 	}
 	
+	public static void populatePasswordManager(String fileNameToPopulateFrom, KnownPasswordManager manager) throws IOException {
+		File knownPasswordFile = new File(KNOWN_PASSWORD_FILE);
+		Scanner knownPasswordScanner = new Scanner(knownPasswordFile);
+		
+		while (knownPasswordScanner.hasNextLine()) {
+			String knownPasswordLine = knownPasswordScanner.nextLine();
+			String[] knownPasswordData = knownPasswordLine.split(",");
+			
+			String unencryptedPassword = knownPasswordData[0];
+			String encryptedPassword = knownPasswordData[1];
+			
+			manager.addPassword(encryptedPassword, unencryptedPassword);
+		}
+
+		knownPasswordScanner.close();
+	}
 }

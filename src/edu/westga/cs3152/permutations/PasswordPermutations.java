@@ -1,9 +1,12 @@
 package edu.westga.cs3152.permutations;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import edu.westga.cs3152.hashing.SimpleCrypt;
 import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
 import edu.westga.cs3152.passwordvariationdata.LetterToNumberVariations;
 import edu.westga.cs3152.permutations.characterdata.Letters;
@@ -20,7 +23,7 @@ public class PasswordPermutations {
 
 	private KnownPasswordManager manager;
 	private String password;
-	private ArrayList<String> permutations;
+	private FileWriter knownFileWriter;
 	
 	/**
 	 * Creates a new password permutations class
@@ -34,10 +37,10 @@ public class PasswordPermutations {
 	 * @param manager the manager to find the permutations of
 	 * @param password the password to find the permutations of
 	 */
-	public PasswordPermutations(KnownPasswordManager manager, String password) {
+	public PasswordPermutations(KnownPasswordManager manager, String password, FileWriter knownFileWriter) {
 		this.manager = manager;
 		this.password = password;
-		this.permutations = new ArrayList<String>();
+		this.knownFileWriter = knownFileWriter;
 	}
 	
 	/**
@@ -48,8 +51,8 @@ public class PasswordPermutations {
 	 * 
 	 * @return the string permutations
 	 */
-	public ArrayList<String> getPermutations() {
-		return this.permutations;
+	public KnownPasswordManager getPermutations() {
+		return this.manager;
 	}
 	
 	/**
@@ -58,16 +61,14 @@ public class PasswordPermutations {
 	 * @precondition none
 	 * @postcondition this.permutations[0 through password.length] != null
 	 */
-	public void populateWithPermutations() {
-
-		ArrayList<String> iterablePermutations = new ArrayList<String>(this.calculateCasePermutations(this.password.toUpperCase()));
-		for (String casePermutation : iterablePermutations) {
-			this.letterToNumberPermutations(casePermutation);
-		}
+	public void populateWithPermutations() throws IOException {
+		this.letterToNumberPermutations(this.password);
  	}
 	
 	
-	public ArrayList<String> letterToNumberPermutations(String permutationsToCalculate) {
+	public void letterToNumberPermutations(String permutationsToCalculate) throws IOException {
+		SimpleCrypt crypt = new SimpleCrypt();
+		
 		LetterToNumberVariations letterToNumber = new LetterToNumberVariations();
 
 		String[] passwordCharacters = permutationsToCalculate.split("");
@@ -119,51 +120,11 @@ public class PasswordPermutations {
 				indexSwitchCounters[characterIndex]++;
 			}
 
-			this.permutations.add(String.join("", permutation));
-		}
-		return this.permutations;
-	}
-
-	
-	public ArrayList<String> calculateCasePermutations(String permutationsToCalculate) {
-		int[] indexesToSwitchCase = new int[permutationsToCalculate.length()];
-		boolean[] isUppercase = new boolean[permutationsToCalculate.length()];
-		int[] caseSwitchCounters = new int[permutationsToCalculate.length()];
-		
-		for (int indexToSwitchCase = 0; indexToSwitchCase < permutationsToCalculate.length(); indexToSwitchCase++) {
-			indexesToSwitchCase[indexToSwitchCase] = (int) Math.pow(2, (permutationsToCalculate.length() - indexToSwitchCase - 1));
-			isUppercase[indexToSwitchCase] = true;
-			caseSwitchCounters[indexToSwitchCase] = 0;
-		}
-		
-		for (int passwordCounter = 0; passwordCounter < Math.pow(2, permutationsToCalculate.length()); passwordCounter++) {
-			String[] permutation = permutationsToCalculate.split("");
+			String joinedPermutation = String.join("", permutation);
+			String passwordHash = crypt.generateHash(joinedPermutation);
 			
-			for (int permutationCounter = 0; permutationCounter < permutation.length; permutationCounter++) {
-				int maximumIndexToToggleCase = indexesToSwitchCase[permutationCounter];
-				
-				if (caseSwitchCounters[permutationCounter] == maximumIndexToToggleCase) {
-					if (isUppercase[permutationCounter]) {
-						isUppercase[permutationCounter] = false;
-					} else {
-						isUppercase[permutationCounter] = true;
-					}
-					
-					caseSwitchCounters[permutationCounter] = 0;
-				}
-				
-				if (isUppercase[permutationCounter]) {
-					permutation[permutationCounter] = permutation[permutationCounter].toUpperCase();
-				} else {
-					permutation[permutationCounter] = permutation[permutationCounter].toLowerCase();
-				}
-				
-				caseSwitchCounters[permutationCounter]++;
-			}
-			
-			this.permutations.add(String.join("", permutation));
+			this.manager.addPassword(passwordHash, joinedPermutation);
+			this.knownFileWriter.append(joinedPermutation + "," + passwordHash + "\n");
 		}
-
-		return this.permutations;
 	}
 }

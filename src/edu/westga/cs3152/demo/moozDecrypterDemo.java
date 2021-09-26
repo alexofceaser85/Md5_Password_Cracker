@@ -16,25 +16,27 @@ public class moozDecrypterDemo {
 	private static final String KNOWN_PASSWORD_FILE = "./knownPasswords.csv";
 	
 	private static final String WORST_PASSWORD_FILE = "./500-worst-passwords.txt";
-	private static final boolean SHOULD_GENERATE_NEW_KNOWN_PASSWORDS = true;
+	private static final boolean SHOULD_GENERATE_NEW_KNOWN_PASSWORDS = false;
 	
 	public static void main(String[] args) {
 		try {
+			KnownPasswordManager manager = new KnownPasswordManager();
 			if (SHOULD_GENERATE_NEW_KNOWN_PASSWORDS) {
-				KnownPasswordDataParser.populateKnownPasswordFile(WORST_PASSWORD_FILE);
-			} 
+				File knownPasswordFile = new File(KNOWN_PASSWORD_FILE);
+				FileWriter knownFileWriter = new FileWriter(knownPasswordFile);
+				KnownPasswordDataParser.populateKnownPasswordFile(WORST_PASSWORD_FILE, manager, knownFileWriter);
+				knownFileWriter.close();
+			} else {
+				KnownPasswordDataParser.populatePasswordManager(KNOWN_PASSWORD_FILE, manager);
+			}
 			
 			File outputFile = new File(OUTPUT_FILE);
 			FileWriter outputFileWriter = new FileWriter(outputFile);
 			File inputFile = new File(INPUT_FILE);
 			Scanner inputFileScanner = new Scanner(inputFile);
 			
-			KnownPasswordManager manager = new KnownPasswordManager();
-			manager.populateKnownPasswords(KNOWN_PASSWORD_FILE);
-			
 			while (inputFileScanner.hasNextLine()) {
 				String[] data = inputFileScanner.nextLine().split(",");
-				System.out.println(data[1]);
 				String userName = data[0];
 				String password = data[1];
 

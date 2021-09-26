@@ -3,6 +3,8 @@ package edu.westga.cs3152.tests.knownpasswords;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 
 import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
@@ -10,7 +12,7 @@ import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
 class TestAddPassword {
 
 	@Test
-	void shouldNotAddNullEncryptedPassword() {
+	void shouldNotAddNullEncryptedPassword() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		assertThrows(IllegalArgumentException.class, () -> {
 			manager.addPassword(null, "password");
@@ -18,7 +20,7 @@ class TestAddPassword {
 	}
 	
 	@Test
-	void shouldNotAddEmptyEncryptedPassword() {
+	void shouldNotAddEmptyEncryptedPassword() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		assertThrows(IllegalArgumentException.class, () -> {
 			manager.addPassword("", "password");
@@ -26,7 +28,7 @@ class TestAddPassword {
 	}
 	
 	@Test
-	void shouldNotAddNullUnencryptedPassword() {
+	void shouldNotAddNullUnencryptedPassword() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		assertThrows(IllegalArgumentException.class, () -> {
 			manager.addPassword("password", null);
@@ -34,7 +36,7 @@ class TestAddPassword {
 	}
 	
 	@Test
-	void shouldNotAddEmptyUnencryptedPassword() {
+	void shouldNotAddEmptyUnencryptedPassword() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		assertThrows(IllegalArgumentException.class, () -> {
 			manager.addPassword("password", "");
@@ -42,7 +44,7 @@ class TestAddPassword {
 	}
 	
 	@Test
-	void shouldAddOnePassword() {
+	void shouldAddOnePassword() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		manager.addPassword("hello world", "password");
 		
@@ -51,7 +53,7 @@ class TestAddPassword {
 	}
 	
 	@Test
-	void shouldAddManyPasswords() {
+	void shouldAddManyPasswords() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		manager.addPassword("first", "password");
 		manager.addPassword("second", "qwerty");

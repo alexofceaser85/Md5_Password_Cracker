@@ -2,6 +2,9 @@ package edu.westga.cs3152.passwordmanagers;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Set;
@@ -19,15 +22,18 @@ import edu.westga.cs3152.permutations.PasswordPermutations;
 
 public class KnownPasswordManager {
 
+	private static final String KNOWN_PASSWORD_FILE = "./knownPasswords.csv";
+	
 	private HashMap<String, String> knownPasswords;
 	
 	/**
 	 * Creates a new known password manager
+	 * @throws IOException 
 	 * 
 	 * @precondition none
 	 * @postcondition this.knownPasswords == new HashMap<String, String>
 	 */
-	public KnownPasswordManager() {
+	public KnownPasswordManager() throws IOException {
 		this.knownPasswords = new HashMap<String, String>();
 	}
 	
@@ -50,6 +56,10 @@ public class KnownPasswordManager {
 	
 	public Set<String> getEncryptedPasswords() {
 		return this.knownPasswords.keySet();
+	}
+	
+	public Collection<String> getUnencryptedPasswords() {
+		return this.knownPasswords.values();
 	}
 
 	/**
@@ -99,7 +109,7 @@ public class KnownPasswordManager {
 	}
 	
 	/**
-	 * Adds a password to the known passwords
+	 * Adds a known password to the password manager
 	 * 
 	 * @precondition 
 	 * unencryptedPassword != null 
@@ -110,8 +120,10 @@ public class KnownPasswordManager {
 	 * 
 	 * @param encryptedPassword the encrypted password to add
 	 * @param unencryptedPassword the unencrypted password to add
+	 * @throws IOException 
 	 */
-	public void addPassword(String encryptedPassword, String unencryptedPassword) {
+	
+	public void addPassword(String encryptedPassword, String unencryptedPassword) throws IOException {
 		if (unencryptedPassword == null) {
 			throw new IllegalArgumentException(KnownPasswordManagerErrorMessages.CANNOT_ADD_PASSWORD_IF_UNENCRYPTED_PASSWORD_IS_NULL);
 		}
@@ -142,28 +154,5 @@ public class KnownPasswordManager {
 			throw new IllegalArgumentException(KnownPasswordManagerErrorMessages.CANNOT_REMOVE_NULL_PASSWORD);
 		}
 		return this.knownPasswords.remove(unencryptedPassword);
-	}
-	
-	/**
-	 * Populates the known password data from the given password dictionary
-	 * 
-	 * @precondition fileNameOfKnownPasswords != null && fileNameOfKnownPasswords.isEmpty() == false
-	 * @postcondition this.knownPasswords.size
-	 * 
-	 * @param fileNameOfKnownPasswords
-	 * @throws FileNotFoundException if the file does not exist
-	 */
-	public void populateKnownPasswords(String fileNameOfKnownPasswords) throws FileNotFoundException {
-		//TODO add preconditions
-		
-		File knownPasswordFile = new File(fileNameOfKnownPasswords);
-		Scanner knownPasswordScanner = new Scanner(knownPasswordFile);
-		
-		while (knownPasswordScanner.hasNextLine()) {
-			String[] passwords = knownPasswordScanner.nextLine().split(",");
-			this.addPassword(passwords[1], passwords[0]);
-		}
-		
-		knownPasswordScanner.close();
 	}
 }

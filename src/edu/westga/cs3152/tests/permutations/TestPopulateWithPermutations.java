@@ -167,16 +167,16 @@ class TestPopulateWithPermutations {
 //				+ "qe5t" + System.lineSeparator(), this.toString(permutations.getPermutations(), "qest"));
 //	}
 //	
-	@Test
-	void shouldPopulateForNoLetterToNumberConverions() {
-		PasswordPermutations permutations = new PasswordPermutations(new KnownPasswordManager(), "qt");
-		permutations.populateWithPermutations();
-		assertEquals("Permutations of qest" + System.lineSeparator()
-				+ "QT" + System.lineSeparator()
-				+ "Qt" + System.lineSeparator()
-				+ "qT" + System.lineSeparator()
-				+ "qt" + System.lineSeparator(), this.toString(permutations.getPermutations(), "qest"));
-	}
+//	@Test
+//	void shouldPopulateForNoLetterToNumberConverions() {
+//		PasswordPermutations permutations = new PasswordPermutations(new KnownPasswordManager(), "qt");
+//		permutations.populateWithPermutations();
+//		assertEquals("Permutations of qest" + System.lineSeparator()
+//				+ "QT" + System.lineSeparator()
+//				+ "Qt" + System.lineSeparator()
+//				+ "qT" + System.lineSeparator()
+//				+ "qt" + System.lineSeparator(), this.toString(permutations.getPermutations(), "qest"));
+//	}
 //	
 //	@Test
 //	void shouldPopulateStarterPasswordPermutations() {

@@ -4,6 +4,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 
 import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
@@ -11,7 +13,7 @@ import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
 class TestIsEncryptedPasswordContained {
 
 	@Test
-	void shouldNotAllowNullPassword() {
+	void shouldNotAllowNullPassword() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		assertThrows(IllegalArgumentException.class, () -> {
 			manager.isEncryptedPasswordContained(null);
@@ -19,27 +21,27 @@ class TestIsEncryptedPasswordContained {
 	}
 	
 	@Test
-	public void shouldReturnFalseForEmptyManager() {
+	public void shouldReturnFalseForEmptyManager() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		assertFalse(manager.isEncryptedPasswordContained("not match"));
 	}
 	
 	@Test
-	public void shouldReturnFalseForManagerWithOneNotMatchingItem() {
+	public void shouldReturnFalseForManagerWithOneNotMatchingItem() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		manager.addPassword("first", "qwerty");
 		assertFalse(manager.isEncryptedPasswordContained("not match"));
 	}
 
 	@Test
-	public void shouldReturnTrueForManagerWithOneMatchingItem() {
+	public void shouldReturnTrueForManagerWithOneMatchingItem() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		manager.addPassword("first", "qwerty");
 		assertTrue(manager.isEncryptedPasswordContained("first"));
 	}
 	
 	@Test
-	public void shouldReturnFalseForManagerWithManyNotMatchingItems() {
+	public void shouldReturnFalseForManagerWithManyNotMatchingItems() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		manager.addPassword("first", "qwerty");
 		manager.addPassword("second", "apple");
@@ -48,7 +50,7 @@ class TestIsEncryptedPasswordContained {
 	}
 	
 	@Test
-	public void shouldReturnTrueForManagerWithManyItemsAndFirstItemMatching() {
+	public void shouldReturnTrueForManagerWithManyItemsAndFirstItemMatching() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		manager.addPassword("first", "qwerty");
 		manager.addPassword("second", "apple");
@@ -57,7 +59,7 @@ class TestIsEncryptedPasswordContained {
 	}
 	
 	@Test
-	public void shouldReturnTrueForManagerWithManyItemsAndMiddleItemMatching() {
+	public void shouldReturnTrueForManagerWithManyItemsAndMiddleItemMatching() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		manager.addPassword("first", "qwerty");
 		manager.addPassword("second", "apple");
@@ -66,7 +68,7 @@ class TestIsEncryptedPasswordContained {
 	}
 	
 	@Test
-	public void shouldReturnTrueForManagerWithManyItemsAndLastItemMatching() {
+	public void shouldReturnTrueForManagerWithManyItemsAndLastItemMatching() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		manager.addPassword("first", "qwerty");
 		manager.addPassword("second", "apple");
@@ -75,7 +77,7 @@ class TestIsEncryptedPasswordContained {
 	}
 	
 	@Test
-	public void shouldReturnFalseForUnencryptedPassword() {
+	public void shouldReturnFalseForUnencryptedPassword() throws IOException {
 		KnownPasswordManager manager = new KnownPasswordManager();
 		manager.addPassword("first", "qwerty");
 		manager.addPassword("second", "apple");
