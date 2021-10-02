@@ -10,7 +10,7 @@ import edu.westga.cs3152.errormessages.LetterToNumberVariantErrorMessages;
  * @author Alex DeCesare
  * @version 19-September-2021
  */
-public class LetterToNumberVariations {
+public class CharacterVariations {
 
 	private HashMap<String, String> letterToNumberVariations;
 	
@@ -22,7 +22,7 @@ public class LetterToNumberVariations {
 	 * this.letterToNumberVariations == new HashMap<String, String> 
 	 * && this.letterToNumberVariations.isEmpty() == false
 	 */
-	public LetterToNumberVariations() {
+	public CharacterVariations() {
 		this.letterToNumberVariations = new HashMap<String, String>();
 		this.populateLetterToNumberVariations();
 	}
@@ -45,11 +45,15 @@ public class LetterToNumberVariations {
 	 * @precondition wordToCheck != null
 	 * @postcondition none
 	 * 
+	 * @param wordToCheck the word to get the number of variations of
+	 * 
 	 * @return the number of letters that have variations in a word
 	 */
 	
 	public int getNumberOfVariationsInWord(String wordToCheck) {
-		//TODO Add precondition
+		if (wordToCheck == null) {
+			throw new IllegalArgumentException(LetterToNumberVariantErrorMessages.CANNOT_GET_NUMBER_OF_VARIANTS_OF_NULL_WORD);
+		}
 		
 		int numberOfVariations = 0;
 		String[] wordCollection = wordToCheck.split("");

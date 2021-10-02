@@ -1,17 +1,11 @@
 package edu.westga.cs3152.passwordmanagers;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Scanner;
 import java.util.Set;
 
 import edu.westga.cs3152.errormessages.KnownPasswordManagerErrorMessages;
-import edu.westga.cs3152.hashing.SimpleCrypt;
-import edu.westga.cs3152.permutations.PasswordPermutations;
 
 /**
  * Holds the known passwords
@@ -31,7 +25,7 @@ public class KnownPasswordManager {
 	 * @precondition none
 	 * @postcondition this.knownPasswords == new HashMap<String, String>
 	 */
-	public KnownPasswordManager() throws IOException {
+	public KnownPasswordManager() {
 		this.knownPasswords = new HashMap<String, String>();
 	}
 	
@@ -52,10 +46,26 @@ public class KnownPasswordManager {
 		return this.knownPasswords.get(encryptedPassword);
 	}
 	
+	/**
+	 * Gets the encrypted passwords
+	 * 
+	 * @precondition none
+	 * @postcondition none
+	 * 
+	 * @return the encrypted passwords
+	 */
 	public Set<String> getEncryptedPasswords() {
 		return this.knownPasswords.keySet();
 	}
 	
+	/**
+	 * Gets the unencrypted passwords
+	 * 
+	 * @precondition none
+	 * @postcondition none
+	 * 
+	 * @return the unencrypted passwords
+	 */
 	public Collection<String> getUnencryptedPasswords() {
 		return this.knownPasswords.values();
 	}
@@ -121,7 +131,7 @@ public class KnownPasswordManager {
 	 * @throws IOException 
 	 */
 	
-	public void addPassword(String encryptedPassword, String unencryptedPassword) throws IOException {
+	public void addPassword(String encryptedPassword, String unencryptedPassword) {
 		if (unencryptedPassword == null) {
 			throw new IllegalArgumentException(KnownPasswordManagerErrorMessages.CANNOT_ADD_PASSWORD_IF_UNENCRYPTED_PASSWORD_IS_NULL);
 		}

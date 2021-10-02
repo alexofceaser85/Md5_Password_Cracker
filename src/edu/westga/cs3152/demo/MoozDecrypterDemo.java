@@ -6,27 +6,36 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-import edu.westga.cs3152.knownpassworddata.KnownPasswordDataParser;
+import edu.westga.cs3152.hashing.SimpleCrypt;
 import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
+import edu.westga.cs3152.permutations.PasswordPermutations;
+import edu.westga.cs3152.permutations.StarterPasswordPermutations;
 
+/**
+ * The demo for the Mooz password decrypter
+ * 
+ * @author Alex DeCesare
+ * @version 02-October-2021
+ */
 public class MoozDecrypterDemo {
 
 	private static final String OUTPUT_FILE = "./moozDecryptedPasswords.csv";
 	private static final String INPUT_FILE = "./passwordData.csv";
-	private static final String KNOWN_PASSWORD_FILE = "./knownPasswords.csv";
 	private static final String WORST_PASSWORD_FILE = "./500-worst-passwords.txt";
-	
-	private static final boolean SHOULD_GENERATE_NEW_KNOWN_PASSWORDS = true;
-	
+
+	/**
+	 * The entry point into the Mooz password decrypter
+	 * 
+	 * @precondition none
+	 * @postcondition none
+	 * 
+	 * @param args the arguments
+	 */
 	public static void main(String[] args) {
 		try {
 			KnownPasswordManager manager = new KnownPasswordManager();
-			if (SHOULD_GENERATE_NEW_KNOWN_PASSWORDS) {
-				generateNewKnownPasswords(manager);
-			} else {
-				KnownPasswordDataParser.populatePasswordManager(KNOWN_PASSWORD_FILE, manager);
-			}
-			
+			populateKnownPasswordFile(manager);
+
 			File outputFile = new File(OUTPUT_FILE);
 			FileWriter outputFileWriter = new FileWriter(outputFile);
 			File inputFile = new File(INPUT_FILE);
@@ -44,13 +53,6 @@ public class MoozDecrypterDemo {
 			e.printStackTrace();
 		}
 	}
-
-	private static void generateNewKnownPasswords(KnownPasswordManager manager) throws IOException {
-		File knownPasswordFile = new File(KNOWN_PASSWORD_FILE);
-		FileWriter knownFileWriter = new FileWriter(knownPasswordFile);
-		KnownPasswordDataParser.populateKnownPasswordFile(WORST_PASSWORD_FILE, manager, knownFileWriter);
-		knownFileWriter.close();
-	}
 	
 	private static void findPassword(KnownPasswordManager manager, FileWriter outputFileWriter,
 			Scanner inputFileScanner) throws IOException {
@@ -63,6 +65,20 @@ public class MoozDecrypterDemo {
 		} else {
 			outputFileWriter.append(userName + "," + password + "," + "UNABLE TO FIND PASSWORD" + System.lineSeparator());
 		}
+	}
+	
+	private static void populateKnownPasswordFile(KnownPasswordManager manager) throws IOException {
+		File passwordFile = new File(WORST_PASSWORD_FILE);
+		Scanner passwordScanner = new Scanner(passwordFile);
+		SimpleCrypt crypt = new SimpleCrypt();
+		while (passwordScanner.hasNextLine()) {
+			PasswordPermutations permutations = new PasswordPermutations(manager, passwordScanner.nextLine());
+			permutations.populateLetterVariations(crypt);
+		}
+
+		StarterPasswordPermutations starterPermutations = new StarterPasswordPermutations(new int[] {0}, manager);
+		starterPermutations.calculateStarterPasswordPermutations(crypt);
+		passwordScanner.close();
 	}
 
 }

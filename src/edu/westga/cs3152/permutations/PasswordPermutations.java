@@ -1,16 +1,11 @@
 package edu.westga.cs3152.permutations;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 
 import edu.westga.cs3152.hashing.SimpleCrypt;
 import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
-import edu.westga.cs3152.passwordvariationdata.LetterToNumberVariations;
-import edu.westga.cs3152.permutations.characterdata.Letters;
-import edu.westga.cs3152.permutations.characterdata.Numbers;
+import edu.westga.cs3152.passwordvariationdata.CharacterVariations;
 
 /**
  * Holds the permutations for each password
@@ -22,11 +17,9 @@ import edu.westga.cs3152.permutations.characterdata.Numbers;
 public class PasswordPermutations {
 
 	private KnownPasswordManager manager;
-	private String password;
-	private FileWriter knownFileWriter;
 	private int[] indexesToSwitchNumbers;
 	private int numberOfNumberVariations;
-	private LetterToNumberVariations letterToNumber;
+	private CharacterVariations letterToNumber;
 	private int[] indexSwitchCounters;
 	private boolean[] isNumber;
 	private String[] passwordCharacters;
@@ -46,13 +39,10 @@ public class PasswordPermutations {
 	 * @param manager the manager to find the permutations of
 	 * @param password the password to find the permutations of
 	 */
-	public PasswordPermutations(KnownPasswordManager manager, String password, FileWriter knownFileWriter) {
+	public PasswordPermutations(KnownPasswordManager manager, String password) {
 		this.manager = manager;
-		this.password = password;
-		this.knownFileWriter = knownFileWriter;
-		
-		this.letterToNumber = new LetterToNumberVariations();
-		this.letterToNumber.getNumberOfVariationsInWord(password);
+
+		this.letterToNumber = new CharacterVariations();
 		this.numberOfNumberVariations = this.letterToNumber.getNumberOfVariationsInWord(password);
 		
 		this.indexesToSwitchNumbers = new int[this.numberOfNumberVariations];
@@ -76,25 +66,33 @@ public class PasswordPermutations {
 		return this.manager;
 	}
 
-	public void populateLetterToNumberPermutations(SimpleCrypt crypt) throws IOException {
+	/**
+	 * Populates the letter variations
+	 * 
+	 * @precondition none
+	 * @postcondition this.manager.getKnownPasswords() > 0
+	 * 
+	 * @param crypt the password decrypter
+	 * 
+	 * @throws IOException 
+	 */
+	public void populateLetterVariations(SimpleCrypt crypt) {
 		this.overrideDefaultValuesWithPasswordValues();
 		this.addLetterToNumberPermutations(crypt);
 	}
 
-	private void addLetterToNumberPermutations(SimpleCrypt crypt) throws IOException {
+	private void addLetterToNumberPermutations(SimpleCrypt crypt) {
 		for (int possibleNumberIndex = 0; possibleNumberIndex < Math.pow(2, this.possibleNumbers.size()); possibleNumberIndex++) {
-			String[] permutation = this.password.split("");
+			String[] permutation = this.passwordCharacters.clone();
 				
 			for (int characterIndex = 0; characterIndex < this.possibleNumbers.size(); characterIndex++) {
-				int maximumIndexToToggleNumber = this.indexesToSwitchNumbers[characterIndex];
-				
-				if (this.indexSwitchCounters[characterIndex] == maximumIndexToToggleNumber) {
+				if (this.indexSwitchCounters[characterIndex] == this.indexesToSwitchNumbers[characterIndex]) {
 					if (this.isNumber[characterIndex]) {
 						this.isNumber[characterIndex] = false;
 					} else {
 						this.isNumber[characterIndex] = true;
 					}
-						
+
 					this.indexSwitchCounters[characterIndex] = 0;
 				}
 				
@@ -106,10 +104,7 @@ public class PasswordPermutations {
 			}
 
 			String joinedPermutation = String.join("", permutation);
-			String passwordHash = crypt.generateHash(joinedPermutation);
-			
-			this.manager.addPassword(passwordHash, joinedPermutation);
-			//this.knownFileWriter.append(joinedPermutation + "," + passwordHash + "\n");
+			this.manager.addPassword(crypt.generateHash(joinedPermutation), joinedPermutation);
 		}
 	}
 
