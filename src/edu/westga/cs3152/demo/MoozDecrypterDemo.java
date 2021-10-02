@@ -6,8 +6,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-import edu.westga.cs3152.hashing.SimpleCrypt;
 import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
+import edu.westga.cs3152.passwordvariationdata.CharacterVariations;
 import edu.westga.cs3152.permutations.PasswordPermutations;
 import edu.westga.cs3152.permutations.StarterPasswordPermutations;
 
@@ -19,6 +19,9 @@ import edu.westga.cs3152.permutations.StarterPasswordPermutations;
  */
 public class MoozDecrypterDemo {
 
+	private static final String STARTING_PASSWORD_SEARCH_MESSAGE = "Starting password search";
+	private static final String PASSWORD_SEARCH_FINISHED_MESSAGE = "Password search finished, decrypted passwords are found at ";
+	private static final String UNABLE_TO_FIND_PASSWORD_MESSAGE = "UNABLE TO FIND PASSWORD";
 	private static final String OUTPUT_FILE = "./moozDecryptedPasswords.csv";
 	private static final String INPUT_FILE = "./passwordData.csv";
 	private static final String WORST_PASSWORD_FILE = "./500-worst-passwords.txt";
@@ -33,6 +36,7 @@ public class MoozDecrypterDemo {
 	 */
 	public static void main(String[] args) {
 		try {
+			System.out.println(STARTING_PASSWORD_SEARCH_MESSAGE);
 			KnownPasswordManager manager = new KnownPasswordManager();
 			populateKnownPasswordFile(manager);
 
@@ -47,6 +51,7 @@ public class MoozDecrypterDemo {
 			
 			inputFileScanner.close();
 			outputFileWriter.close();
+			System.out.println(PASSWORD_SEARCH_FINISHED_MESSAGE + OUTPUT_FILE);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -63,22 +68,21 @@ public class MoozDecrypterDemo {
 		if (manager.isEncryptedPasswordContained(password)) {
 			outputFileWriter.append(userName + "," + password + "," + manager.getKnownPassword(password) + System.lineSeparator());
 		} else {
-			outputFileWriter.append(userName + "," + password + "," + "UNABLE TO FIND PASSWORD" + System.lineSeparator());
+			outputFileWriter.append(userName + "," + password + "," + UNABLE_TO_FIND_PASSWORD_MESSAGE + System.lineSeparator());
 		}
 	}
 	
 	private static void populateKnownPasswordFile(KnownPasswordManager manager) throws IOException {
 		File passwordFile = new File(WORST_PASSWORD_FILE);
 		Scanner passwordScanner = new Scanner(passwordFile);
-		SimpleCrypt crypt = new SimpleCrypt();
 		while (passwordScanner.hasNextLine()) {
-			PasswordPermutations permutations = new PasswordPermutations(manager, passwordScanner.nextLine());
-			permutations.populateLetterVariations(crypt);
+			PasswordPermutations permutations = new PasswordPermutations(manager, passwordScanner.nextLine(), new CharacterVariations());
+			permutations.populateLetterVariations();
 		}
-
-		StarterPasswordPermutations starterPermutations = new StarterPasswordPermutations(new int[] {0}, manager);
-		starterPermutations.calculateStarterPasswordPermutations(crypt);
 		passwordScanner.close();
+		
+		StarterPasswordPermutations starterPermutations = new StarterPasswordPermutations(manager);
+		starterPermutations.calculateStarterPasswordPermutations();
 	}
 
 }

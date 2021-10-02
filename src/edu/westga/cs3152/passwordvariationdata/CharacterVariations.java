@@ -2,7 +2,7 @@ package edu.westga.cs3152.passwordvariationdata;
 
 import java.util.HashMap;
 
-import edu.westga.cs3152.errormessages.LetterToNumberVariantErrorMessages;
+import edu.westga.cs3152.errormessages.CharacterVariationsErrorMessages;
 
 /**
  * Holds the letter to number variations for a password
@@ -52,7 +52,10 @@ public class CharacterVariations {
 	
 	public int getNumberOfVariationsInWord(String wordToCheck) {
 		if (wordToCheck == null) {
-			throw new IllegalArgumentException(LetterToNumberVariantErrorMessages.CANNOT_GET_NUMBER_OF_VARIANTS_OF_NULL_WORD);
+			throw new IllegalArgumentException(CharacterVariationsErrorMessages.CANNOT_GET_NUMBER_OF_VARIANTS_OF_NULL_WORD);
+		}
+		if (wordToCheck.isEmpty()) {
+			throw new IllegalArgumentException(CharacterVariationsErrorMessages.CANNOT_GET_NUMBER_VARIANT_OF_EMPTY_WORD);
 		}
 		
 		int numberOfVariations = 0;
@@ -78,7 +81,10 @@ public class CharacterVariations {
 	
 	public boolean ifWordHasNumberVariant(String wordToCheck) {
 		if (wordToCheck == null) {
-			throw new IllegalArgumentException(LetterToNumberVariantErrorMessages.CANNOT_DETERMINE_IF_NULL_WORD_HAS_NUMBER_VARIANT);
+			throw new IllegalArgumentException(CharacterVariationsErrorMessages.CANNOT_DETERMINE_IF_NULL_WORD_HAS_NUMBER_VARIANT);
+		}
+		if (wordToCheck.isEmpty()) {
+			throw new IllegalArgumentException(CharacterVariationsErrorMessages.CANNOT_DETERMINE_IF_EMPTY_WORD_HAS_NUMBER_VARIANT);
 		}
 		
 		String[] wordCollection = wordToCheck.split("");
@@ -103,7 +109,10 @@ public class CharacterVariations {
 	 */
 	public String getLettersNumberVariant(String letterToGet) {
 		if (letterToGet == null) {
-			throw new IllegalArgumentException(LetterToNumberVariantErrorMessages.CANNOT_GET_NUMBER_VARIANT_OF_NULL_WORD);
+			throw new IllegalArgumentException(CharacterVariationsErrorMessages.CANNOT_GET_NUMBER_VARIANT_OF_NULL_WORD);
+		}
+		if (letterToGet.isEmpty()) {
+			throw new IllegalArgumentException(CharacterVariationsErrorMessages.CANNOT_GET_NUMBER_VARIANT_OF_EMPTY_WORD);
 		}
 		
 		if (this.letterToNumberVariations.containsKey(letterToGet)) {

@@ -1,9 +1,8 @@
 package edu.westga.cs3152.permutations;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-import edu.westga.cs3152.hashing.SimpleCrypt;
+import edu.westga.cs3152.errormessages.PasswordPermutationsErrorMessages;
 import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
 import edu.westga.cs3152.passwordvariationdata.CharacterVariations;
 
@@ -17,10 +16,11 @@ import edu.westga.cs3152.passwordvariationdata.CharacterVariations;
 public class PasswordPermutations {
 
 	private KnownPasswordManager manager;
-	private int[] indexesToSwitchNumbers;
-	private int numberOfNumberVariations;
 	private CharacterVariations letterToNumber;
+	private int numberOfNumberVariations;
+	
 	private int[] indexSwitchCounters;
+	private int[] indexesToSwitchNumbers;
 	private boolean[] isNumber;
 	private String[] passwordCharacters;
 	
@@ -30,7 +30,7 @@ public class PasswordPermutations {
 	/**
 	 * Creates a new password permutations class
 	 * 
-	 * @precondition password != null && password.isEmpty() == false && manager != null
+	 * @precondition password != null && password.isEmpty() == false && manager != null && letterToNumber != null
 	 * @postcondition 
 	 *  this.password == password
 	 *  this.permutations == new String[password.length()][Math.pow(2, password.length()]
@@ -38,11 +38,25 @@ public class PasswordPermutations {
 	 * 
 	 * @param manager the manager to find the permutations of
 	 * @param password the password to find the permutations of
+	 * @param letterToNumber the letter to number variations
 	 */
-	public PasswordPermutations(KnownPasswordManager manager, String password) {
+	public PasswordPermutations(KnownPasswordManager manager, String password, CharacterVariations letterToNumber) {
+		if (manager == null) {
+			throw new IllegalArgumentException(PasswordPermutationsErrorMessages.MANAGER_CANNOT_BE_NULL);
+		}
+		if (password == null) {
+			throw new IllegalArgumentException(PasswordPermutationsErrorMessages.PASSWORD_CANNOT_BE_NULL);
+		}
+		if (password.isEmpty()) {
+			throw new IllegalArgumentException(PasswordPermutationsErrorMessages.PASSWORD_CANNOT_BE_EMPTY);
+		}
+		if (letterToNumber == null) {
+			throw new IllegalArgumentException(PasswordPermutationsErrorMessages.LETTER_TO_NUMBER_CONVERSIONS_CANNOT_BE_NULL);
+		}
+		
 		this.manager = manager;
 
-		this.letterToNumber = new CharacterVariations();
+		this.letterToNumber = letterToNumber;
 		this.numberOfNumberVariations = this.letterToNumber.getNumberOfVariationsInWord(password);
 		
 		this.indexesToSwitchNumbers = new int[this.numberOfNumberVariations];
@@ -71,17 +85,13 @@ public class PasswordPermutations {
 	 * 
 	 * @precondition none
 	 * @postcondition this.manager.getKnownPasswords() > 0
-	 * 
-	 * @param crypt the password decrypter
-	 * 
-	 * @throws IOException 
 	 */
-	public void populateLetterVariations(SimpleCrypt crypt) {
+	public void populateLetterVariations() {
 		this.overrideDefaultValuesWithPasswordValues();
-		this.addLetterToNumberPermutations(crypt);
+		this.addLetterToNumberPermutations();
 	}
 
-	private void addLetterToNumberPermutations(SimpleCrypt crypt) {
+	private void addLetterToNumberPermutations() {
 		for (int possibleNumberIndex = 0; possibleNumberIndex < Math.pow(2, this.possibleNumbers.size()); possibleNumberIndex++) {
 			String[] permutation = this.passwordCharacters.clone();
 				
@@ -103,8 +113,7 @@ public class PasswordPermutations {
 				this.indexSwitchCounters[characterIndex]++;
 			}
 
-			String joinedPermutation = String.join("", permutation);
-			this.manager.addPassword(crypt.generateHash(joinedPermutation), joinedPermutation);
+			this.manager.addPassword(String.join("", permutation));
 		}
 	}
 
