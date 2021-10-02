@@ -9,63 +9,125 @@ import edu.westga.cs3152.passwordmanagers.KnownPasswordManager;
 import edu.westga.cs3152.permutations.characterdata.Letters;
 import edu.westga.cs3152.permutations.characterdata.Numbers;
 
-public final class StarterPasswordPermutations {
+public class StarterPasswordPermutations {
+	
+	private final int amountOfStarterLetters = 2;
+	private final int amountOfStarterNumbers = 4;
+	
+	private String[] possibleNumbers;
+	private int[] alphabetIndexes;
+	private int[] starterLetterIndexes;
+	private int[] starterNumberIndexes;
+	private int[] switchIndexesForStarterLetters;
+	private int[] switchIndexesForStarterNumbers;
+	private int[] uppercaseLetterIndexes;
+	private KnownPasswordManager manager;
+	private FileWriter knownFileWriter;
+	
+	/**
+	 * Calculates the permutations of the starter password
+	 * 
+	 * @precondition 
+	 *     uppercaseLetterIndexes != null
+	 *     && manager != null
+	 *     && knownFileWriter != null
+	 *     
+	 * @postcondition
+	 * 	   this.possibleNumbers = new String[(int) Math.pow(10, this.amountOfStarterNumbers)];
+	 * 	   this.starterLetterIndexes = new int[this.amountOfStarterLetters];
+	 * 	   this.starterNumberIndexes = new int[this.amountOfStarterNumbers];
+	 *     this.switchIndexesForStarterLetters = new int[this.amountOfStarterLetters];
+	 *     this.switchIndexesForStarterNumbers = new int[this.amountOfStarterNumbers];
+	 *     this.alphabetIndexes = new int[Letters.LOWER_CASE_LETTERS.length];
+	 *     this.uppercaseLetterIndexes = uppercaseLetterIndexes;
+	 *     this.manager = manager;
+	 *     this.knownFileWriter = knownFileWriter;
+	 * 
+	 * @param uppercaseLetterIndexes the indexes for the uppercase letters
+	 * @param manager the manager to add the permutations to
+	 * @param knownFileWriter the file to save the permutations to
+	 */
+	public StarterPasswordPermutations(int[] uppercaseLetterIndexes, KnownPasswordManager manager, FileWriter knownFileWriter) {
+		if (uppercaseLetterIndexes == null) {
+			throw new IllegalArgumentException("uppercase letter indexes cannot be null");
+		}
+		if (manager == null) {
+			throw new IllegalArgumentException("manager cannot be null");
+		}
+		if (knownFileWriter == null) {
+			throw new IllegalArgumentException("known file writer cannot be null");
+		}
+		
+		this.possibleNumbers = new String[(int) Math.pow(10, this.amountOfStarterNumbers)];
+		this.starterLetterIndexes = new int[this.amountOfStarterLetters];
+		this.starterNumberIndexes = new int[this.amountOfStarterNumbers];
+		this.switchIndexesForStarterLetters = new int[this.amountOfStarterLetters];
+		this.switchIndexesForStarterNumbers = new int[this.amountOfStarterNumbers];
+		this.alphabetIndexes = new int[Letters.LOWER_CASE_LETTERS.length];
+		this.uppercaseLetterIndexes = uppercaseLetterIndexes;
+		this.manager = manager;
+		this.knownFileWriter = knownFileWriter;
+	}
 
-	public static void starterPasswordPermutations(int[] uppercaseLetterIndexes, KnownPasswordManager manager, FileWriter knownFileWriter) throws IOException {
-		SimpleCrypt crypt = new SimpleCrypt();
+	public void calculateStarterPasswordPermutations(SimpleCrypt crypt) throws IOException {
 		
-		int amountOfStarterLetters = 2;
-		int amountOfStarterNumbers = 4;
+		this.initializePermutationIndexes();
+
+		for (int possibleNumberIndex = 0; possibleNumberIndex < this.possibleNumbers.length; possibleNumberIndex++) {
+			this.possibleNumbers[possibleNumberIndex] = String.format("%04d", possibleNumberIndex);
+		}
 		
-		int[] alphabetIndexes = new int[Letters.LOWER_CASE_LETTERS.length];
-		
-		int[] starterLetterIndexes = new int[amountOfStarterLetters];
-		int[] starterNumberIndexes = new int[amountOfStarterNumbers];
-		
-		int[] switchIndexesForStarterLetters = new int[amountOfStarterLetters];
-		int[] switchIndexesForStarterNumbers = new int[amountOfStarterNumbers];
-		
+		for (int passwordLetterIndex = 0; passwordLetterIndex < Math.pow(Letters.LOWER_CASE_LETTERS.length, this.amountOfStarterLetters); passwordLetterIndex++) {
+			String permutation = "";
+			
+			permutation = this.calculateCasePermutation(permutation);
+			this.calculateNumberPermutations(permutation, crypt);
+		}
+	}
+
+	private void initializePermutationIndexes() {
 		for (int starterLetterCounter = 0; starterLetterCounter < amountOfStarterLetters; starterLetterCounter++) {
-			starterLetterIndexes[starterLetterCounter] = 0;
-			switchIndexesForStarterLetters[starterLetterCounter] = (int) Math.pow(Letters.LOWER_CASE_LETTERS.length, amountOfStarterLetters - starterLetterCounter - 1);
+			this.starterLetterIndexes[starterLetterCounter] = 0;
+			this.switchIndexesForStarterLetters[starterLetterCounter] = (int) Math.pow(Letters.LOWER_CASE_LETTERS.length, this.amountOfStarterLetters - starterLetterCounter - 1);
 		}
 		
 		for (int starterNumberCounter = 0; starterNumberCounter < amountOfStarterNumbers; starterNumberCounter++) {
-			starterNumberIndexes[starterNumberCounter] = 0;
-			switchIndexesForStarterNumbers[starterNumberCounter] = (int) Math.pow(Numbers.NUMBER_ZERO_TO_NINE.length, amountOfStarterNumbers - starterNumberCounter - 1);
+			this.starterNumberIndexes[starterNumberCounter] = 0;
+			this.switchIndexesForStarterNumbers[starterNumberCounter] = (int) Math.pow(Numbers.NUMBER_ZERO_TO_NINE.length, this.amountOfStarterNumbers - starterNumberCounter - 1);
 		}
+	}
 
-		for (int passwordLetterIndex = 0; passwordLetterIndex < Math.pow(26, amountOfStarterLetters); passwordLetterIndex++) {
-			String permutation = "";
+	private void calculateNumberPermutations(String permutation, SimpleCrypt crypt) throws IOException {
+		for (int passwordNumberIndex = 0; passwordNumberIndex < this.possibleNumbers.length; passwordNumberIndex++) {
+			String passwordWithNumber = permutation + this.possibleNumbers[passwordNumberIndex];
+			String passwordHash = crypt.generateHash(passwordWithNumber);
 			
-			for (int passwordCharacterIndex = 0; passwordCharacterIndex < amountOfStarterLetters; passwordCharacterIndex++) {
-				
-				if (starterLetterIndexes[passwordCharacterIndex] == switchIndexesForStarterLetters[passwordCharacterIndex]) {
-					alphabetIndexes[passwordCharacterIndex]++;
-					starterLetterIndexes[passwordCharacterIndex] = 0;
-				} 
-				
-				if (alphabetIndexes[passwordCharacterIndex] == 26) {
-					alphabetIndexes[passwordCharacterIndex] = 0;
-				}
-				
-				if (isUppercase(passwordCharacterIndex, uppercaseLetterIndexes)) {
-					permutation += Letters.LOWER_CASE_LETTERS[alphabetIndexes[passwordCharacterIndex]].toUpperCase();
-				} else {
-					permutation += Letters.LOWER_CASE_LETTERS[alphabetIndexes[passwordCharacterIndex]];
-				}
-				
-				starterLetterIndexes[passwordCharacterIndex]++;
-			}
-
-			for (int passwordNumberIndex = 0; passwordNumberIndex < Math.pow(10, amountOfStarterNumbers); passwordNumberIndex++) {
-				String passwordWithNumber = permutation + String.format("%04d", passwordNumberIndex);
-				String passwordHash = crypt.generateHash(passwordWithNumber);
-				
-				manager.addPassword(passwordHash, passwordWithNumber);
-				knownFileWriter.append(passwordWithNumber + "," + passwordHash + "\n");
-			}
+			this.manager.addPassword(passwordHash, passwordWithNumber);
+			this.knownFileWriter.append(passwordWithNumber + "," + passwordHash + "\n");
 		}
+	}
+
+	private String calculateCasePermutation(String permutation) {
+		for (int passwordCharacterIndex = 0; passwordCharacterIndex < amountOfStarterLetters; passwordCharacterIndex++) {
+			
+			if (this.starterLetterIndexes[passwordCharacterIndex] == this.switchIndexesForStarterLetters[passwordCharacterIndex]) {
+				this.alphabetIndexes[passwordCharacterIndex]++;
+				this.starterLetterIndexes[passwordCharacterIndex] = 0;
+			} 
+			
+			if (this.alphabetIndexes[passwordCharacterIndex] == this.alphabetIndexes.length) {
+				this.alphabetIndexes[passwordCharacterIndex] = 0;
+			}
+			
+			if (isUppercase(passwordCharacterIndex, this.uppercaseLetterIndexes)) {
+				permutation += Letters.UPPER_CASE_LETTERS[this.alphabetIndexes[passwordCharacterIndex]];
+			} else {
+				permutation += Letters.LOWER_CASE_LETTERS[this.alphabetIndexes[passwordCharacterIndex]];
+			}
+			
+			this.starterLetterIndexes[passwordCharacterIndex]++;
+		}
+		return permutation;
 	}
 	
 	private static boolean isUppercase(int indexToCheck, int[] uppercaseLetterIndexes) {

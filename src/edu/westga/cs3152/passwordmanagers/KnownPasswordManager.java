@@ -22,8 +22,6 @@ import edu.westga.cs3152.permutations.PasswordPermutations;
 
 public class KnownPasswordManager {
 
-	private static final String KNOWN_PASSWORD_FILE = "./knownPasswords.csv";
-	
 	private HashMap<String, String> knownPasswords;
 	
 	/**

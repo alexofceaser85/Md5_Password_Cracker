@@ -24,6 +24,15 @@ public class PasswordPermutations {
 	private KnownPasswordManager manager;
 	private String password;
 	private FileWriter knownFileWriter;
+	private int[] indexesToSwitchNumbers;
+	private int numberOfNumberVariations;
+	private LetterToNumberVariations letterToNumber;
+	private int[] indexSwitchCounters;
+	private boolean[] isNumber;
+	private String[] passwordCharacters;
+	
+	private ArrayList<String> possibleNumbers;
+	private ArrayList<Integer> indexesOfPossibleNumbers;
 	
 	/**
 	 * Creates a new password permutations class
@@ -41,6 +50,18 @@ public class PasswordPermutations {
 		this.manager = manager;
 		this.password = password;
 		this.knownFileWriter = knownFileWriter;
+		
+		this.letterToNumber = new LetterToNumberVariations();
+		this.letterToNumber.getNumberOfVariationsInWord(password);
+		this.numberOfNumberVariations = this.letterToNumber.getNumberOfVariationsInWord(password);
+		
+		this.indexesToSwitchNumbers = new int[this.numberOfNumberVariations];
+		this.indexSwitchCounters = new int[this.numberOfNumberVariations];
+		this.isNumber = new boolean[this.numberOfNumberVariations];
+		this.passwordCharacters = password.split("");
+		
+		this.possibleNumbers = new ArrayList<String>();
+		this.indexesOfPossibleNumbers = new ArrayList<Integer>();
 	}
 	
 	/**
@@ -54,77 +75,58 @@ public class PasswordPermutations {
 	public KnownPasswordManager getPermutations() {
 		return this.manager;
 	}
-	
-	/**
-	 * populates the password permutations with the permutations of the password string
-	 * 
-	 * @precondition none
-	 * @postcondition this.permutations[0 through password.length] != null
-	 */
-	public void populateWithPermutations() throws IOException {
-		this.letterToNumberPermutations(this.password);
- 	}
-	
-	
-	public void letterToNumberPermutations(String permutationsToCalculate) throws IOException {
-		SimpleCrypt crypt = new SimpleCrypt();
-		
-		LetterToNumberVariations letterToNumber = new LetterToNumberVariations();
 
-		String[] passwordCharacters = permutationsToCalculate.split("");
-		int numberOfNumberVariations = letterToNumber.getNumberOfVariationsInWord(permutationsToCalculate);
-			
-		int[] indexesToSwitchNumbers = new int[numberOfNumberVariations];
-		int[] indexSwitchCounters = new int[numberOfNumberVariations];
-			
-		boolean[] isNumber = new boolean[numberOfNumberVariations];
-			
-		ArrayList<String> possibleNumbers = new ArrayList<String>();
-		ArrayList<Integer> indexesOfPossibleNumbers = new ArrayList<Integer>();
-			
-		int switchArrayCounter = 0;
-		for (int characterIndex = 0; characterIndex < permutationsToCalculate.length(); characterIndex++) {
-			if (letterToNumber.getLettersNumberVariant(passwordCharacters[characterIndex]) != null) {
-				possibleNumbers.add(passwordCharacters[characterIndex]);
-				indexesOfPossibleNumbers.add(characterIndex);
-					
-				indexesToSwitchNumbers[switchArrayCounter] = (int) Math.pow(2, (numberOfNumberVariations - switchArrayCounter - 1));
+	public void populateLetterToNumberPermutations(SimpleCrypt crypt) throws IOException {
+		this.overrideDefaultValuesWithPasswordValues();
+		this.addLetterToNumberPermutations(crypt);
+	}
 
-				indexSwitchCounters[switchArrayCounter] = 0;
-				isNumber[switchArrayCounter] = true;
-
-				switchArrayCounter++;
-			}
-		}
-
-		for (int possibleNumberIndex = 0; possibleNumberIndex < Math.pow(2, possibleNumbers.size()); possibleNumberIndex++) {
-			String[] permutation = permutationsToCalculate.split("");
+	private void addLetterToNumberPermutations(SimpleCrypt crypt) throws IOException {
+		for (int possibleNumberIndex = 0; possibleNumberIndex < Math.pow(2, this.possibleNumbers.size()); possibleNumberIndex++) {
+			String[] permutation = this.password.split("");
 				
-			for (int characterIndex = 0; characterIndex < possibleNumbers.size(); characterIndex++) {
-				int maximumIndexToToggleNumber = indexesToSwitchNumbers[characterIndex];
+			for (int characterIndex = 0; characterIndex < this.possibleNumbers.size(); characterIndex++) {
+				int maximumIndexToToggleNumber = this.indexesToSwitchNumbers[characterIndex];
 				
-				if (indexSwitchCounters[characterIndex] == maximumIndexToToggleNumber) {
-					if (isNumber[characterIndex]) {
-						isNumber[characterIndex] = false;
+				if (this.indexSwitchCounters[characterIndex] == maximumIndexToToggleNumber) {
+					if (this.isNumber[characterIndex]) {
+						this.isNumber[characterIndex] = false;
 					} else {
-						isNumber[characterIndex] = true;
+						this.isNumber[characterIndex] = true;
 					}
 						
-					indexSwitchCounters[characterIndex] = 0;
+					this.indexSwitchCounters[characterIndex] = 0;
 				}
 				
-				if (isNumber[characterIndex]) {
-					permutation[indexesOfPossibleNumbers.get(characterIndex)] = letterToNumber.getLettersNumberVariant(possibleNumbers.get(characterIndex));
+				if (this.isNumber[characterIndex]) {
+					permutation[this.indexesOfPossibleNumbers.get(characterIndex)] = this.letterToNumber.getLettersNumberVariant(this.possibleNumbers.get(characterIndex));
 				} 
 
-				indexSwitchCounters[characterIndex]++;
+				this.indexSwitchCounters[characterIndex]++;
 			}
 
 			String joinedPermutation = String.join("", permutation);
 			String passwordHash = crypt.generateHash(joinedPermutation);
 			
 			this.manager.addPassword(passwordHash, joinedPermutation);
-			this.knownFileWriter.append(joinedPermutation + "," + passwordHash + "\n");
+			//this.knownFileWriter.append(joinedPermutation + "," + passwordHash + "\n");
+		}
+	}
+
+	private void overrideDefaultValuesWithPasswordValues() {
+		int switchArrayCounter = 0;
+		for (int characterIndex = 0; characterIndex < this.passwordCharacters.length; characterIndex++) {
+			if (this.letterToNumber.getLettersNumberVariant(this.passwordCharacters[characterIndex]) != null) {
+				this.possibleNumbers.add(this.passwordCharacters[characterIndex]);
+				this.indexesOfPossibleNumbers.add(characterIndex);
+					
+				this.indexesToSwitchNumbers[switchArrayCounter] = (int) Math.pow(2, (this.numberOfNumberVariations - switchArrayCounter - 1));
+
+				this.indexSwitchCounters[switchArrayCounter] = 0;
+				this.isNumber[switchArrayCounter] = true;
+
+				switchArrayCounter++;
+			}
 		}
 	}
 }

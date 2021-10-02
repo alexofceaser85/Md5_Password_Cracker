@@ -24,13 +24,14 @@ public final class KnownPasswordDataParser {
 	public static void populateKnownPasswordFile(String fileNameToPopulate, KnownPasswordManager manager, FileWriter knownFileWriter) throws IOException {
 		File passwordFile = new File(fileNameToPopulate);
 		Scanner passwordScanner = new Scanner(passwordFile);
-
+		SimpleCrypt crypt = new SimpleCrypt();
 		while (passwordScanner.hasNextLine()) {
 			PasswordPermutations permutations = new PasswordPermutations(manager, passwordScanner.nextLine(), knownFileWriter);
-			permutations.populateWithPermutations();
+			permutations.populateLetterToNumberPermutations(crypt);
 		}
 
-		StarterPasswordPermutations.starterPasswordPermutations(new int[] {0}, manager, knownFileWriter);
+		StarterPasswordPermutations starterPermutations = new StarterPasswordPermutations(new int[] {0}, manager, knownFileWriter);
+		starterPermutations.calculateStarterPasswordPermutations(crypt);
 		passwordScanner.close();
 	}
 	
